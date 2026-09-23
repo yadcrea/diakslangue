@@ -8302,4 +8302,59 @@ final List<LanguageModel> allLanguages = [
       ),
     ],
   ),
+
+  // ── BAOULÉ ───────────────────────────────────────
+  LanguageModel(
+    id: 'baoule',
+    name: 'Baoulé',
+    flag: '🇨🇮',
+    countryCode: 'CI',
+    country: 'Côte d\'Ivoire',
+    color: const Color(0xFFBF360C),
+    courses: [],
+  ),
+
+  // ── BÉTÉ ───────────────────────────────────────
+  LanguageModel(
+    id: 'bete',
+    name: 'Bété',
+    flag: '🇨🇮',
+    countryCode: 'CI',
+    country: 'Côte d\'Ivoire',
+    color: const Color(0xFF4E342E),
+    courses: [],
+  ),
+
+  // ── KOYAGA ───────────────────────────────────────
+  LanguageModel(
+    id: 'koyaga',
+    name: 'Koyaga',
+    flag: '🇨🇮',
+    countryCode: 'CI',
+    country: 'Côte d\'Ivoire',
+    color: const Color(0xFF827717),
+    courses: [],
+  ),
+
+  // ── EWONDO ───────────────────────────────────────
+  LanguageModel(
+    id: 'ewondo',
+    name: 'Ewondo',
+    flag: '🇨🇲',
+    countryCode: 'CM',
+    country: 'Cameroun',
+    color: const Color(0xFF283593),
+    courses: [],
+  ),
+
+  // ── BAMILÉKÉ ───────────────────────────────────────
+  LanguageModel(
+    id: 'bamileke',
+    name: 'Bamiléké',
+    flag: '🇨🇲',
+    countryCode: 'CM',
+    country: 'Cameroun',
+    color: const Color(0xFFAD1457),
+    courses: [],
+  ),
 ];

@@ -19,12 +19,45 @@ List<ExerciseModel> _vocabExercises(String languageName, List<List<String>> pair
   }).toList();
 }
 
-LessonModel _vocabLesson(String id, String title, List<List<String>> pairs) {
+LessonModel _vocabLesson(
+  String id,
+  String title,
+  List<List<String>> pairs, {
+  String language = 'Dioula',
+}) {
   return LessonModel(
     id: id,
     title: title,
-    exercises: _vocabExercises('Dioula', pairs),
+    exercises: _vocabExercises(language, pairs),
   );
+}
+
+LessonModel _lingalaVocab(String id, String title, List<List<String>> pairs) =>
+    _vocabLesson(id, title, pairs, language: 'Lingala');
+
+/// Questions "prompt → réponse" avec une formulation libre de la question
+/// (sens d'un proverbe, prononciation, etc.). Chaque paire = [prompt, réponse].
+LessonModel _qaLesson(
+  String id,
+  String title,
+  List<List<String>> pairs,
+  String Function(String prompt) question,
+) {
+  final exercises = pairs.map((pair) {
+    final answer = pair[1];
+    final distractors = pairs
+        .where((other) => other[1] != answer)
+        .map((other) => other[1])
+        .toList()
+      ..shuffle();
+    final choices = [answer, ...distractors.take(3)]..shuffle();
+    return ExerciseModel(
+      question: question(pair[0]),
+      correctAnswer: answer,
+      choices: choices,
+    );
+  }).toList();
+  return LessonModel(id: id, title: title, exercises: exercises);
 }
 
 final List<LanguageModel> allLanguages = [
@@ -1458,42 +1491,356 @@ final List<LanguageModel> allLanguages = [
   LanguageModel(
     id: 'lingala',
     name: 'Lingala',
-    flag: '🇨🇩',
-    countryCode: 'CD',
-    country: 'Congo / RDC',
+    flag: '🇨🇬',
+    countryCode: 'CG',
+    country: 'Congo',
     color: const Color(0xFFB71C1C),
     courses: [
       CourseModel(
         id: 'lingala-c1',
         title: 'Les salutations',
-        description: 'Apprenez à saluer en Lingala',
+        description: 'Apprenez à saluer et à demander des nouvelles en Lingala',
         isFree: true,
+        level: 1,
+        lessons: [
+          _lingalaVocab('lingala-l1', 'Dire bonjour', [
+            ['Mbote', 'Bonjour'],
+            ['Mbote na yo', 'Bonjour à toi'],
+            ['Mbote na bino', 'Bonjour à vous'],
+            ['Butu malamu', 'Bonsoir'],
+          ]),
+          _lingalaVocab('lingala-l2', 'Comment ça va ?', [
+            ['Ndenge nini ?', 'Comment ça va ?'],
+            ['Ozali malamu ?', 'Tu vas bien ?'],
+            ['Ozali ndenge nini ?', 'Comment vas-tu ?'],
+            ['Boni ?', 'Ça va ?'],
+            ['Mbote na yo, ozali malamu ?', 'Bonjour, tu vas bien ?'],
+          ]),
+          _lingalaVocab('lingala-l3', 'Répondre', [
+            ['Nazali malamu', 'Je vais bien'],
+            ['Nazali malamu penza', 'Je vais très bien'],
+            ['Nazali kaka boye', 'Comme ci, comme ça'],
+            ['Nazali malamu te', 'Je ne vais pas bien'],
+            ['Ozali', 'Tu es / tu vas'],
+            ['Nazali', 'Je suis / je vais'],
+          ]),
+        ],
+      ),
+      CourseModel(
+        id: 'lingala-c2',
+        title: 'Se présenter',
+        description: 'Dire son nom, son âge, d\'où l\'on vient et parler de sa famille',
+        isFree: true,
+        level: 1,
+        lessons: [
+          _lingalaVocab('lingala-l4', 'Mon nom', [
+            ['Kombo', 'Nom'],
+            ['Nkombo na yo nani ?', "Comment tu t'appelles ?"],
+            ['Kombo na ngai ezali David', 'Mon nom est David'],
+            ['Nazali kobenga ngai David', "Je m'appelle David"],
+            ['Na ngai', 'Le mien'],
+            ['Na yo', 'Le tien'],
+          ]),
+          _lingalaVocab('lingala-l5', "D'où viens-tu ?", [
+            ['Outi wapi ?', "Tu viens d'où ?"],
+            ['Nauti na Congo', 'Je viens du Congo'],
+            ['Nauti na Brazzaville', 'Je viens de Brazzaville'],
+            ['Nauti na France', 'Je viens de France'],
+            ['Nauti na mboka', 'Je viens du village / du pays'],
+            ['Nauti na Pointe-Noire', 'Je viens de Pointe-Noire'],
+            ['Nauti na Kinshasa', 'Je viens de Kinshasa'],
+            ['Nauti na Kinkala', 'Je viens de Kinkala'],
+          ]),
+          _lingalaVocab('lingala-l6', "L'âge", [
+            ['Ozali na mibu boni ?', 'Tu as quel âge ?'],
+            ['Nazali na mibu zomi', "J'ai 10 ans"],
+            ['Nazali na mibu tuku mitano', "J'ai 50 ans"],
+            ['Nazali na mibu tuku mitano na mibale', "J'ai 52 ans"],
+            ['Mibu', 'Années'],
+          ]),
+          _lingalaVocab('lingala-l7', 'Les dizaines', [
+            ['zomi', '10'],
+            ['tuku mibale', '20'],
+            ['tuku misato', '30'],
+            ['tuku minei', '40'],
+            ['tuku mitano', '50'],
+          ]),
+          _lingalaVocab('lingala-l8', 'Homme, femme, statut', [
+            ['Mobali', 'Homme'],
+            ['Mwasi', 'Femme'],
+            ['Nazali mobali', 'Je suis un homme'],
+            ['Nazali mwasi', 'Je suis une femme'],
+            ['Nazali célibataire', 'Je suis célibataire'],
+            ['Nazali na libala', 'Je suis marié(e)'],
+            ['Nazali na bana', "J'ai des enfants"],
+            ['Nazali na mwana moko', "J'ai un enfant"],
+            ['Nazali na mwana mibale', "J'ai deux enfants"],
+          ]),
+          _lingalaVocab('lingala-l9', 'Mes parents', [
+            ['Tata na ngai', 'Mon père'],
+            ['Mama na ngai', 'Ma mère'],
+            ['Tata azali malamu', 'Papa va bien'],
+            ['Mama azali malamu', 'Maman va bien'],
+          ]),
+        ],
+      ),
+      CourseModel(
+        id: 'lingala-c3',
+        title: 'Les chiffres',
+        description: 'Compter en Lingala',
+        isFree: true,
+        level: 1,
+        lessons: [
+          _lingalaVocab('lingala-l10', 'De 0 à 5', [
+            ['libungutulu', '0'],
+            ['moko', '1'],
+            ['mibale', '2'],
+            ['misato', '3'],
+            ['minei', '4'],
+            ['mitano', '5'],
+          ]),
+          _lingalaVocab('lingala-l11', 'De 6 à 10', [
+            ['motoba', '6'],
+            ['nsambo', '7'],
+            ['mwambe', '8'],
+            ['libwa', '9'],
+            ['zomi', '10'],
+          ]),
+          _lingalaVocab('lingala-l12', 'De 11 à 15', [
+            ['zomi na moko', '11'],
+            ['zomi na mibale', '12'],
+            ['zomi na misato', '13'],
+            ['zomi na minei', '14'],
+            ['zomi na mitano', '15'],
+            ['Na', 'Et'],
+          ]),
+          _lingalaVocab('lingala-l13', 'De 16 à 20', [
+            ['zomi na motoba', '16'],
+            ['zomi na nsambo', '17'],
+            ['zomi na mwambe', '18'],
+            ['zomi na libwa', '19'],
+            ['ntuku mibale', '20'],
+          ]),
+          _lingalaVocab('lingala-l14', 'De 20 à 100', [
+            ['ntuku mibale', '20'],
+            ['ntuku misato', '30'],
+            ['ntuku minei', '40'],
+            ['ntuku mitano', '50'],
+            ['ntuku motoba', '60'],
+            ['ntuku nsambo', '70'],
+            ['ntuku mwambe', '80'],
+            ['ntuku libwa', '90'],
+            ['nkama moko', '100'],
+          ]),
+        ],
+      ),
+      CourseModel(
+        id: 'lingala-c4',
+        title: 'Politesse',
+        description: 'Dire merci, s\'il te plaît et s\'excuser en Lingala',
+        isFree: true,
+        level: 1,
+        lessons: [
+          _lingalaVocab('lingala-l15', 'Dire merci', [
+            ['Matóndo', 'Merci'],
+            ['Matóndo mingi', 'Merci beaucoup'],
+            ['Matóndo na yo', 'Merci à toi'],
+            ['Matóndo na bino', 'Merci à vous'],
+          ]),
+          _lingalaVocab('lingala-l16', "S'il te plaît", [
+            ['Nabóngi yo', "S'il te plaît"],
+            ['Nabóngi yo mingi', "S'il te plaît (plus poli)"],
+            ['Nabóngi yo, pesa ngai mai', "S'il te plaît, donne-moi de l'eau"],
+            ['Nabóngi yo mingi, yoka ngai', "S'il te plaît beaucoup, écoute-moi"],
+          ]),
+          _lingalaVocab('lingala-l17', 'Pardon et excuses', [
+            ['Pardon hein !', 'Pardon, excuse-moi'],
+            ['Pardon hein, nasalaki te na posa', "Pardon, je ne l'ai pas fait exprès"],
+            ['Limbisa ngai moko', 'Excuse-moi vraiment'],
+            ['Limbisa ngai moko, nazalaki na posa te', 'Excuse-moi vraiment, je ne voulais pas'],
+          ]),
+          _lingalaVocab('lingala-l18', 'Reconnaître sa faute', [
+            ['Ngai nde nazangi', "C'est ma faute"],
+            ['Ngai nde nazangi, limbisa ngai', "C'est ma faute, excuse-moi"],
+            ['Kanga motema', 'Calme-toi / prends ça cool'],
+            ['Kanga motema, limbisa ngai', 'Calme-toi, excuse-moi'],
+            ['Pardon, ekomaki boye', "Pardon, ça s'est passé comme ça"],
+            ['Pardon hein, ekomaki boye', "Pardon, c'est arrivé comme ça"],
+          ]),
+        ],
+      ),
+      CourseModel(
+        id: 'lingala-c5',
+        title: 'Se faire comprendre',
+        description: 'Comprendre, demander de parler lentement, dire oui et non',
+        isFree: true,
+        level: 1,
+        lessons: [
+          _lingalaVocab('lingala-l19', 'Comprendre', [
+            ['Kososola', 'Comprendre'],
+            ['Koyeba', 'Savoir'],
+            ['Nazali kososola', 'Je comprends'],
+            ['Nakososoli te', 'Je ne comprends pas'],
+            ['Ozali kososola ?', 'Tu comprends ?'],
+            ['Nayebi yango', 'Je comprends / je sais ça'],
+            ['Nayebi te', 'Je ne sais pas / je ne comprends pas'],
+          ]),
+          _lingalaVocab('lingala-l20', 'Parler lentement', [
+            ['Loba', 'Parler'],
+            ['Malembe', 'Doucement / lentement'],
+            ['Loba malembe', 'Parle lentement'],
+            ['Loba malembe, nasengi yo', "Parle lentement, s'il te plaît"],
+            ['Loba malembe, nazali koyekola Lingala', "Parle lentement, j'apprends le lingala"],
+            ['Okoki koloba malembe ?', 'Tu peux parler lentement ?'],
+          ]),
+          _lingalaVocab('lingala-l21', 'Oui et non', [
+            ['Ee', 'Oui (le plus courant)'],
+            ['Iyo', 'Oui (insistant / affirmatif)'],
+            ['Te', 'Non'],
+            ['Te nyonso te', 'Pas du tout'],
+          ]),
+          _lingalaVocab('lingala-l22', 'Petites conversations', [
+            ['Ozali kososola Lingala ?', 'Tu comprends le lingala ?'],
+            ['Ee, nazali kososola malembe malembe', 'Oui, je comprends petit à petit'],
+            ['Ee, nazali malamu', 'Oui, je vais bien'],
+            ['Te, nayebi te', 'Non, je ne sais pas'],
+            ['Iyo, nazali kososola !', 'Oui, je comprends vraiment !'],
+          ]),
+        ],
+      ),
+      CourseModel(
+        id: 'lingala-c6',
+        title: 'Prononciation',
+        description: 'Les voyelles, les sons qui vont ensemble et la façon de lire',
+        isFree: true,
+        level: 1,
+        lessons: [
+          _qaLesson(
+            'lingala-l23',
+            'Les voyelles',
+            [
+              ['A', 'a (papa)'],
+              ['E', 'é / è léger'],
+              ['I', 'i (machine)'],
+              ['O', 'o (mot)'],
+              ['U', 'ou (loup)'],
+            ],
+            (p) => 'Comment se prononce la voyelle "$p" en Lingala ?',
+          ),
+          _qaLesson(
+            'lingala-l24',
+            'Lettres qui vont ensemble',
+            [
+              ['ng', 'ngai (moi)'],
+              ['mb', 'mboka (pays, village)'],
+              ['nd', 'ndeko (frère, sœur)'],
+              ['nz', 'nzala (faim)'],
+            ],
+            (p) => 'Quel exemple illustre la combinaison "$p" ?',
+          ),
+          _qaLesson(
+            'lingala-l25',
+            'Bien prononcer',
+            [
+              ['Ozali', 'o-za-li'],
+              ['Nazali', 'na-za-li'],
+              ['Malamu', 'ma-la-mou'],
+              ['Matóndo', 'Ma-ton-do'],
+            ],
+            (p) => 'Comment se prononce "$p" ?',
+          ),
+        ],
+      ),
+      CourseModel(
+        id: 'lingala-c7',
+        title: 'Quiz de la semaine 1',
+        description: 'Testez ce que vous avez appris cette semaine',
+        isFree: true,
+        level: 1,
         lessons: [
           LessonModel(
-            id: 'lingala-l1',
-            title: 'Dire bonjour',
+            id: 'lingala-l26',
+            title: 'Quiz',
             exercises: [
               ExerciseModel(
-                question: 'Comment dit-on "Bonjour" en Lingala ?',
-                correctAnswer: 'Mbote',
-                choices: ['Mbote', 'Ozali malamu?', 'Botondi', 'Na komona yo'],
+                question: 'Combien de voyelles y a-t-il en Lingala ?',
+                correctAnswer: '5',
+                choices: ['3', '4', '5', '6'],
               ),
               ExerciseModel(
-                question: 'Comment dit-on "Merci" en Lingala ?',
-                correctAnswer: 'Botondi',
-                choices: ['Botondi', 'Mbote', 'Na komona yo', 'Ozali malamu?'],
+                question: 'Quelle voyelle se prononce comme "ou" en français ?',
+                correctAnswer: 'U',
+                choices: ['A', 'E', 'I', 'U'],
               ),
               ExerciseModel(
                 question: 'Comment dit-on "Comment ça va ?" en Lingala ?',
-                correctAnswer: 'Ozali malamu?',
-                choices: ['Ozali malamu?', 'Mbote', 'Botondi', 'Na komona yo'],
+                correctAnswer: 'Ozali malamu ?',
+                choices: ['Ozali wapi ?', 'Mbote ?', 'Ozali malamu ?', 'Nkombo na yo nani ?'],
               ),
               ExerciseModel(
-                question: 'Comment dit-on "Au revoir" en Lingala ?',
-                correctAnswer: 'Na komona yo',
-                choices: ['Na komona yo', 'Mbote', 'Ozali malamu?', 'Botondi'],
+                question: 'Quelle réponse signifie "Je vais bien" ?',
+                correctAnswer: 'Nazali malamu',
+                choices: ['Nazali mobali', 'Nazali malamu', 'Nazali na mbula', 'Nauti na…'],
+              ),
+              ExerciseModel(
+                question: 'Comment dit-on "Je m\'appelle David" en Lingala ?',
+                correctAnswer: 'Nkombo na ngai David',
+                choices: [
+                  'Nkombo na yo nani David ?',
+                  'Nkombo na ngai David',
+                  'Nazali David',
+                  'David na ngai',
+                ],
+              ),
+              ExerciseModel(
+                question: 'Comment dit-on "Je viens du Congo" en Lingala ?',
+                correctAnswer: 'Nauti na Congo',
+                choices: ['Nazali Congo', 'Nauti na Congo', 'Nalingi Congo', 'Nakozonga Congo'],
+              ),
+              ExerciseModel(
+                question: 'Que signifie "Nazali mobali, nazali célibataire" ?',
+                correctAnswer: 'Je suis un homme, je suis célibataire',
+                choices: [
+                  'Je suis un homme, je suis célibataire',
+                  'Je suis une femme, je suis mariée',
+                  'Je suis un homme, je suis marié',
+                  'Je suis une femme, je suis célibataire',
+                ],
+              ),
+              ExerciseModel(
+                question: 'Que signifie "Nazali mwasi, nazali na libala" ?',
+                correctAnswer: 'Je suis une femme, je suis mariée',
+                choices: [
+                  'Je suis un homme, je suis célibataire',
+                  'Je suis une femme, je suis mariée',
+                  'Je suis un homme, je suis marié',
+                  'Je suis une femme, je suis célibataire',
+                ],
               ),
             ],
+          ),
+        ],
+      ),
+      CourseModel(
+        id: 'lingala-c8',
+        title: 'Proverbes',
+        description: 'La sagesse lingala en quelques phrases',
+        isFree: true,
+        level: 2,
+        lessons: [
+          _qaLesson(
+            'lingala-l27',
+            'Proverbes',
+            [
+              ['Moto oyo ayoki te, amoni te.', "Celui qui n'écoute pas ne comprend pas."],
+              ['Libunga ezali moto nyonso.', "L'erreur appartient à tout le monde."],
+              ['Moto ayebi koloba matóndo, ayebi mpe bomoyi.', 'Celui qui sait dire merci sait vivre.'],
+              ['Mibu ezali lokola mai, ezali koleka.', "Les années sont comme l'eau, elles passent."],
+              ['Moto oyo ayebi epayi auti, ayebi mpe epayi akei.', "Celui qui sait d'où il vient sait aussi où il va."],
+              ['Kombo ezali lokumu.', "Le nom, c'est une dignité."],
+              ['Monoko elobi malamu, motema eboyi.', 'La bouche dit « ça va », mais le cœur refuse (ça ne va pas vraiment).'],
+            ],
+            (p) => 'Que signifie ce proverbe : "$p" ?',
           ),
         ],
       ),
